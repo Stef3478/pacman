@@ -4,6 +4,9 @@ Een complete Pac-Man in de browser: puur HTML, CSS en JavaScript, zonder
 build-stap, zonder afhankelijkheden en zonder externe bestanden. Open
 `index.html` en je speelt.
 
+Online te spelen via GitHub Pages: <https://stef3478.github.io/pacman/>
+(Instellingen → Pages → *Deploy from a branch* → `main` / `(root)`.)
+
 ## Spelen
 
 - **Toetsenbord:** pijltjestoetsen of `WASD`
