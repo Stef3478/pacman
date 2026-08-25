@@ -96,36 +96,113 @@
 
   overlayButton.addEventListener('click', function () { game.startFromUi(); });
 
-  // veeggebaren
-  var touchStart = null;
-  canvas.addEventListener('touchstart', function (ev) {
-    var t = ev.changedTouches[0];
-    touchStart = { x: t.clientX, y: t.clientY };
-    if (game.state === 'menu' || game.state === 'gameover' || game.paused) game.startFromUi();
-  }, { passive: true });
+  /* ------------------------------------------- vegen om te sturen */
 
-  canvas.addEventListener('touchmove', function (ev) { ev.preventDefault(); }, { passive: false });
-
-  canvas.addEventListener('touchend', function (ev) {
-    if (!touchStart) return;
-    var t = ev.changedTouches[0];
-    var dx = t.clientX - touchStart.x;
-    var dy = t.clientY - touchStart.y;
-    touchStart = null;
-    if (Math.abs(dx) < 18 && Math.abs(dy) < 18) return;
-    if (Math.abs(dx) > Math.abs(dy)) game.turn(dx > 0 ? 'right' : 'left');
-    else game.turn(dy > 0 ? 'down' : 'up');
-  }, { passive: true });
-
-  // knoppen op het scherm
-  Array.prototype.forEach.call(doc.querySelectorAll('[data-dir]'), function (btn) {
-    var fire = function (ev) {
-      ev.preventDefault();
-      game.turn(btn.getAttribute('data-dir'));
-    };
-    btn.addEventListener('touchstart', fire, { passive: false });
-    btn.addEventListener('mousedown', fire);
+  var SWIPE_THRESHOLD = 18;
+  var trackpad = doc.getElementById('trackpad');
+  var dot = doc.getElementById('trackpad-dot');
+  var arrows = {};
+  Array.prototype.forEach.call(doc.querySelectorAll('[data-arrow]'), function (el) {
+    arrows[el.getAttribute('data-arrow')] = el;
   });
+  var arrowTimer = null;
+
+  function flashArrow(dirName) {
+    var el = arrows[dirName];
+    if (!el) return;
+    Object.keys(arrows).forEach(function (k) { arrows[k].classList.remove('on'); });
+    el.classList.add('on');
+    clearTimeout(arrowTimer);
+    arrowTimer = setTimeout(function () { el.classList.remove('on'); }, 260);
+  }
+
+  function steer(dirName) {
+    game.turn(dirName);
+    flashArrow(dirName);
+    if (global.navigator && navigator.vibrate) navigator.vibrate(8);
+  }
+
+  // Eén veeg mag meerdere bochten opleveren: na elke richting verspringt het
+  // ankerpunt, dus een L-vorm geeft meteen ook de volgende afslag door.
+  function attachSwipe(el, options) {
+    var anchor = null;
+    var swiped = false;
+    var lastDir = null;
+
+    function begin(ev) {
+      if (ev.pointerType === 'mouse' && ev.button !== 0) return;
+      anchor = { x: ev.clientX, y: ev.clientY };
+      swiped = false;
+      lastDir = null;
+      if (el.setPointerCapture) {
+        try { el.setPointerCapture(ev.pointerId); } catch (e) { /* niet erg */ }
+      }
+      if (options.onPress) options.onPress(ev);
+      ev.preventDefault();
+    }
+
+    function drag(ev) {
+      if (!anchor) return;
+      if (options.onDrag) options.onDrag(ev);
+      var dx = ev.clientX - anchor.x;
+      var dy = ev.clientY - anchor.y;
+      var horizontal = Math.abs(dx) > Math.abs(dy);
+      var along = horizontal ? Math.abs(dx) : Math.abs(dy);
+      var across = horizontal ? Math.abs(dy) : Math.abs(dx);
+      if (along < SWIPE_THRESHOLD) return;
+      // schuin vegen telt pas als één richting duidelijk wint
+      if (across > along * 0.7) return;
+
+      var dirName = horizontal ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up');
+      anchor = { x: ev.clientX, y: ev.clientY };
+      ev.preventDefault();
+      if (dirName === lastDir) return; // doorvegen in dezelfde richting: niets nieuws
+      lastDir = dirName;
+      swiped = true;
+      steer(dirName);
+    }
+
+    function finish(ev) {
+      var wasDown = anchor !== null;
+      anchor = null;
+      if (wasDown && !swiped && options.onTap) options.onTap();
+      if (options.onRelease) options.onRelease(ev);
+    }
+
+    el.addEventListener('pointerdown', begin);
+    el.addEventListener('pointermove', drag);
+    el.addEventListener('pointerup', finish);
+    el.addEventListener('pointercancel', finish);
+  }
+
+  function wake() {
+    if (game.state === 'menu' || game.state === 'gameover' || game.paused) game.startFromUi();
+  }
+
+  function moveDot(ev) {
+    var rect = trackpad.getBoundingClientRect();
+    dot.hidden = false;
+    dot.style.left = (ev.clientX - rect.left) + 'px';
+    dot.style.top = (ev.clientY - rect.top) + 'px';
+  }
+
+  attachSwipe(trackpad, {
+    onPress: function (ev) { trackpad.classList.add('active'); moveDot(ev); wake(); },
+    onDrag: moveDot,
+    onRelease: function () { trackpad.classList.remove('active'); dot.hidden = true; }
+  });
+
+  // op het speelveld zelf werkt vegen ook gewoon
+  attachSwipe(canvas, { onTap: wake });
+
+  // veegveld tonen zodra er een aanraakscherm meedoet
+  function markTouch() {
+    doc.body.classList.add('has-touch');
+    game.resize();
+  }
+  if ((global.navigator && navigator.maxTouchPoints > 0) || 'ontouchstart' in global) markTouch();
+  else global.addEventListener('touchstart', markTouch, { once: true, passive: true });
+
 
   doc.getElementById('pause').addEventListener('click', function () { game.togglePause(); });
 

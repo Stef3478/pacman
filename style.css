@@ -166,31 +166,80 @@ canvas {
   min-width: 180px;
 }
 
-/* ------------------------------------------------------- touchbediening */
+/* ------------------------------------------------------- veegbediening */
 
-.dpad { display: none; }
-
-@media (hover: none) and (pointer: coarse) {
-  .dpad {
-    display: grid;
-    grid-template-columns: repeat(3, 64px);
-    grid-template-rows: repeat(3, 64px);
-    justify-content: center;
-    gap: 6px;
-    margin-top: 4px;
-  }
-  .pad {
-    border: 1px solid rgba(150, 180, 255, 0.35);
-    background: rgba(30, 40, 90, 0.75);
-    color: #dbe3ff;
-    font-size: 20px;
-    border-radius: 14px;
-    touch-action: manipulation;
-  }
-  .pad:active { background: rgba(60, 85, 190, 0.9); }
-  .up { grid-area: 1 / 2; }
-  .left { grid-area: 2 / 1; }
-  .down { grid-area: 3 / 2; }
-  .right { grid-area: 2 / 3; }
-  .hint { display: none; }
+.trackpad {
+  display: none;
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 150px;
+  border: 1px solid rgba(150, 180, 255, 0.3);
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(60, 90, 200, 0.22), rgba(16, 22, 54, 0.6));
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  overflow: hidden;
+  transition: border-color 0.15s ease, background 0.15s ease;
 }
+
+.trackpad.active {
+  border-color: rgba(255, 230, 0, 0.55);
+  background:
+    radial-gradient(circle at 50% 50%, rgba(90, 125, 255, 0.3), rgba(16, 22, 54, 0.7));
+}
+
+.trackpad .arrow {
+  position: absolute;
+  color: rgba(180, 198, 255, 0.35);
+  font-size: 20px;
+  line-height: 1;
+  transition: color 0.12s ease, transform 0.12s ease, text-shadow 0.12s ease;
+}
+
+.trackpad .arrow.on {
+  color: var(--yellow);
+  transform: scale(1.35);
+  text-shadow: 0 0 14px rgba(255, 230, 0, 0.7);
+}
+
+.trackpad .up { top: 12px; left: 50%; margin-left: -10px; }
+.trackpad .down { bottom: 12px; left: 50%; margin-left: -10px; }
+.trackpad .left { left: 14px; top: 50%; margin-top: -10px; }
+.trackpad .right { right: 14px; top: 50%; margin-top: -10px; }
+
+.trackpad-label {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  color: rgba(160, 178, 235, 0.55);
+  pointer-events: none;
+}
+
+.trackpad.active .trackpad-label { opacity: 0; }
+
+/* stipje dat de vinger volgt */
+.trackpad-dot {
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
+  border-radius: 50%;
+  background: rgba(255, 230, 0, 0.28);
+  border: 1px solid rgba(255, 230, 0, 0.6);
+  pointer-events: none;
+}
+
+.trackpad-dot[hidden] { display: none; }
+
+/* Het veegveld verschijnt zodra er een aanraakscherm in het spel is. */
+body.has-touch .trackpad { display: block; }
+body.has-touch .hint { display: none; }
+body.has-touch { padding-bottom: max(12px, env(safe-area-inset-bottom)); }
+body.has-touch .wrap { min-height: calc(100dvh - 24px); }

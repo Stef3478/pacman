@@ -10,7 +10,9 @@ Online te spelen via GitHub Pages: <https://stef3478.github.io/pacman/>
 ## Spelen
 
 - **Toetsenbord:** pijltjestoetsen of `WASD`
-- **Telefoon/tablet:** vegen over het speelveld, of de knoppen eronder
+- **Telefoon/tablet:** vegen over het veegveld onder het bord (of over het
+  bord zelf). Eén doorlopende beweging mag meerdere bochten geven: veeg in
+  een L-vorm en de volgende afslag staat alvast klaar.
 - **`P`** of `Esc` pauzeert, **`M`** zet het geluid uit, `Enter`/spatie start
 
 ## Wat er in zit

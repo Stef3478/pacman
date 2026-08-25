@@ -26,11 +26,13 @@
       </div>
     </div>
 
-    <div class="dpad" aria-hidden="true">
-      <button class="pad up" data-dir="up" type="button">▲</button>
-      <button class="pad left" data-dir="left" type="button">◀</button>
-      <button class="pad down" data-dir="down" type="button">▼</button>
-      <button class="pad right" data-dir="right" type="button">▶</button>
+    <div id="trackpad" class="trackpad" aria-label="Veegveld: veeg omhoog, omlaag, naar links of naar rechts om Pac-Man te sturen">
+      <div class="arrow up" data-arrow="up">&#9650;</div>
+      <div class="arrow left" data-arrow="left">&#9664;</div>
+      <div class="arrow right" data-arrow="right">&#9654;</div>
+      <div class="arrow down" data-arrow="down">&#9660;</div>
+      <p class="trackpad-label">Veeg hier om te sturen</p>
+      <span id="trackpad-dot" class="trackpad-dot" hidden></span>
     </div>
 
     <footer class="controls">
