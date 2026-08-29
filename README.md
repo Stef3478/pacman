@@ -15,6 +15,20 @@ Online te spelen via GitHub Pages: <https://stef3478.github.io/pacman/>
   een L-vorm en de volgende afslag staat alvast klaar.
 - **`P`** of `Esc` pauzeert, **`M`** zet het geluid uit, `Enter`/spatie start
 
+## Op de Apple TV (AirPlay)
+
+Apple TV heeft geen browser, maar via schermsynchronisatie speelt het prima:
+de TV toont het spel, je duim veegt blind op de telefoon.
+
+1. Zet iPhone/iPad en Apple TV op hetzelfde wifi-netwerk.
+2. Open het spel — het mooist via **Deel → Zet op beginscherm**: het icoon op
+   je beginscherm opent dan zonder browserbalken, beeldvullend.
+3. Open het Bedieningspaneel en kies **Schermsynchronisatie** → je Apple TV.
+4. Draai de telefoon **liggend**: het bord staat dan links op volledige
+   hoogte en het veegveld rechts, zodat het TV-beeld vrijwel gevuld is.
+5. Kijk naar de TV en stuur met vegen. Het scherm blijft tijdens het spelen
+   automatisch wakker, dus de spiegeling valt niet weg.
+
 ## Wat er in zit
 
 - Het klassieke doolhof van 28 x 31 tegels met 292 pillen, vier power-pillen

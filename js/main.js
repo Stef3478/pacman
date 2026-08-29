@@ -94,7 +94,7 @@
     }
   });
 
-  overlayButton.addEventListener('click', function () { game.startFromUi(); });
+  overlayButton.addEventListener('click', function () { keepAwake(); game.startFromUi(); });
 
   /* ------------------------------------------- vegen om te sturen */
 
@@ -175,7 +175,22 @@
     el.addEventListener('pointercancel', finish);
   }
 
+  // Houdt het scherm wakker zolang er gespeeld wordt, anders valt tijdens
+  // AirPlay-spiegelen de verbinding weg zodra de telefoon vergrendelt.
+  var wakeLock = null;
+  function keepAwake() {
+    var nav = global.navigator;
+    if (!nav || !nav.wakeLock || wakeLock) return;
+    try {
+      nav.wakeLock.request('screen').then(function (lock) {
+        wakeLock = lock;
+        lock.addEventListener('release', function () { wakeLock = null; });
+      }).catch(function () { /* geweigerd, bijvoorbeeld in spaarstand */ });
+    } catch (e) { /* oudere browsers */ }
+  }
+
   function wake() {
+    keepAwake();
     if (game.state === 'menu' || game.state === 'gameover' || game.paused) game.startFromUi();
   }
 
@@ -216,6 +231,7 @@
 
   doc.addEventListener('visibilitychange', function () {
     if (doc.hidden && game.state === 'playing' && !game.paused) game.togglePause();
+    if (!doc.hidden) keepAwake(); // de vergrendeling laat los zodra de pagina wegraakt
   });
 
   global.addEventListener('resize', function () { game.resize(); });

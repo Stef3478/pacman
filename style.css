@@ -243,3 +243,46 @@ body.has-touch .trackpad { display: block; }
 body.has-touch .hint { display: none; }
 body.has-touch { padding-bottom: max(12px, env(safe-area-inset-bottom)); }
 body.has-touch .wrap { min-height: calc(100dvh - 24px); }
+
+/* ---------------------------------------------- liggend: AirPlay naar TV */
+
+/* Telefoon gedraaid: bord links op volle hoogte, veegveld rechts.
+   Gespiegeld naar een TV vult dit het beeld vrijwel helemaal. */
+@media (orientation: landscape) {
+  body.has-touch {
+    padding: 10px;
+    padding-left: max(10px, env(safe-area-inset-left));
+    padding-right: max(10px, env(safe-area-inset-right));
+    padding-bottom: max(10px, env(safe-area-inset-bottom));
+  }
+
+  body.has-touch .wrap {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      'stage hud'
+      'stage pad'
+      'stage controls';
+    width: 100%;
+    max-width: 1100px;
+    height: calc(100dvh - 20px);
+    min-height: 0;
+  }
+
+  body.has-touch .hud { grid-area: hud; }
+  body.has-touch .stage { grid-area: stage; }
+  body.has-touch .trackpad { grid-area: pad; min-height: 0; }
+  body.has-touch .controls { grid-area: controls; }
+
+  body.has-touch .stage {
+    height: 100%;
+    aspect-ratio: 448 / 496;
+    justify-self: start;
+  }
+
+  body.has-touch .stage canvas {
+    width: 100%;
+    height: 100%;
+  }
+}
